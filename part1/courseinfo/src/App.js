@@ -1,26 +1,43 @@
+function Header({title}) {
+  return (
+    <h1>{title}</h1>
+  );
+}
+
+function Part({part}) {
+  return (
+    <p>{part.name} {part.exercises}</p>
+  )
+}
+
+function Content({parts}) {
+  return (
+    <>
+      {parts.map((part) => (<Part part={part} />))}
+    </>
+  );
+}
+
+function Total({exerciseCount}) {
+  return (
+    <p>Number of exercises {exerciseCount}</p>
+  )
+}
+
 function App() {
   const course = 'Half Stack application development';
-  const part1 = 'Fundamentals of React';
-  const exercises1 = 10;
-  const part2 = 'Fundamentals of React';
-  const exercises2 = 7;
-  const part3 = 'Fundamentals of React';
-  const exercises3 = 14;
+  const parts = [
+    { name: 'Fundamentals of React', exercises: 10 },
+    { name: 'Using props to pass data', exercises: 7 },
+    { name: 'State of a component', exercises: 14 },
+  ];
   return (
     <div className="App">
-      <h1>{course}</h1>
-      <p>
-        {part1} {exercises1}
-      </p>
-      <p>
-        {part2} {exercises2}
-      </p>
-      <p>
-        {part3} {exercises3}
-      </p>
-      <p>
-        Number of exercises {exercises1 + exercises2 + exercises3}
-      </p>
+      <Header title={course} />
+      <Content parts={parts} />
+      <Total
+        exerciseCount={parts.reduce((total, {name, exercises}) => total + exercises, 0)}
+      />
     </div>
   );
 }
