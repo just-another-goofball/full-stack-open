@@ -25,18 +25,22 @@ function Total({exerciseCount}) {
 }
 
 function App() {
-  const course = 'Half Stack application development';
-  const parts = [
-    { name: 'Fundamentals of React', exercises: 10 },
-    { name: 'Using props to pass data', exercises: 7 },
-    { name: 'State of a component', exercises: 14 },
-  ];
+  const course = {
+    title: 'Half Stack application development',
+    parts: [
+      { name: 'Fundamentals of React', exercises: 10 },
+      { name: 'Using props to pass data', exercises: 7 },
+      { name: 'State of a component', exercises: 14 },
+    ],
+  };
   return (
     <div className="App">
-      <Header title={course} />
-      <Content parts={parts} />
+      <Header title={course.title} />
+      <Content parts={course.parts} />
       <Total
-        exerciseCount={parts.reduce((total, {name, exercises}) => total + exercises, 0)}
+        exerciseCount={
+          course.parts.reduce((total, {name, exercises}) => total + exercises, 0)
+        }
       />
     </div>
   );
