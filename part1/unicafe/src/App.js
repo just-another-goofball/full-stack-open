@@ -1,23 +1,59 @@
 import { useState } from 'react';
 
+function Button({text, onClickHandler}) {
+  return (
+    <button type="button" onClick={onClickHandler}>{text}</button>
+  );
+}
+
 function Feedback({incrementGood, incrementBad, incrementNeutral}) {
   return (
     <div>
       <h1>give feedback</h1>
-      <button type="button" onClick={incrementGood}>good</button>
-      <button type="button" onClick={incrementNeutral}>neutral</button>
-      <button type="button" onClick={incrementBad}>bad</button>
+      <Button onClickHandler={incrementGood} text="good" />
+      <Button onClickHandler={incrementNeutral} text="neutral" />
+      <Button onClickHandler={incrementBad} text="bad" />
     </div>
   );
 }
 
+function StatisticLine({text, value}) {
+  return (
+    <tr>
+      <td>{text}</td>
+      <td>{value}</td>
+    </tr>
+  );
+}
+
 function Stats({good, bad, neutral}) {
+  const total = good + bad + neutral;
+
+  if (total === 0) {
+    return (
+      <div>
+        <h1>statistics</h1>
+        <p>no feedback given</p>
+      </div>
+    );
+  }
+
+  const average = (good - bad) / total;
+  const positive = good * 100 / total;
+
   return (
     <div>
       <h1>statistics</h1>
-      <p>good {good}</p>
-      <p>neutral {neutral}</p>
-      <p>bad {bad}</p>
+      <table>
+        <tbody>
+          <StatisticLine text="good" value={good} />
+          <StatisticLine text="neutral" value={neutral} />
+          <StatisticLine text="bad" value={bad} />
+          <StatisticLine text="all" value={total} />
+          <StatisticLine text="average" value={average} />
+          <StatisticLine text="positive" value={positive + " %"} />
+        </tbody>
+      </table>
     </div>
   );
 }
