@@ -1,13 +1,25 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import axios from 'axios';
+
 import { Search, NewEntryForm, PhonebookEntries } from './components/Phonebook';
 
+const BASE_URL = 'http://localhost:3001';
+
 function App() {
-  const [people, setPeople] = useState([
-    { name: 'Arto Hellas', number: '405-9765-203' },
-  ]);
+  const [people, setPeople] = useState([]);
   const [name, setName] = useState('');
   const [number, setNumber] = useState('');
   const [filter, setFilter] = useState('');
+
+  const hook = () => {
+    axios.get(`${BASE_URL}/persons`)
+      .then((res) => {
+        console.log(res.data);
+        setPeople(res.data);
+      });
+  }
+
+  useEffect(hook, []);
 
   return (
     <div>
