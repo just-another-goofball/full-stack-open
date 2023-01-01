@@ -1,9 +1,7 @@
 import { useState, useEffect } from 'react';
-import axios from 'axios';
 
 import { Search, NewEntryForm, PhonebookEntries } from './components/Phonebook';
-
-const BASE_URL = 'http://localhost:3001';
+import { getAll } from './services/phonebook.service';
 
 function App() {
   const [people, setPeople] = useState([]);
@@ -12,10 +10,10 @@ function App() {
   const [filter, setFilter] = useState('');
 
   const hook = () => {
-    axios.get(`${BASE_URL}/persons`)
-      .then((res) => {
-        console.log(res.data);
-        setPeople(res.data);
+    getAll()
+      .then((data) => {
+        console.log(data);
+        setPeople(data);
       });
   }
 
@@ -32,7 +30,7 @@ function App() {
         setName={setName}
         setNumber={setNumber}
         setPeople={setPeople} />
-      <PhonebookEntries people={people} filter={filter} />
+      <PhonebookEntries people={people} filter={filter} setPeople={setPeople} />
     </div>
   );
 }
