@@ -1,3 +1,5 @@
+import { useState } from 'react';
+
 import { addPerson, deleteById, updatePersonById } from '../services/phonebook.service';
 
 function Input({label, value, onChangeCallback}) {
@@ -18,7 +20,10 @@ function Search({filter, setFilter}) {
   );
 }
 
-function NewEntryForm({name, number, people, setName, setNumber, setPeople}) {
+function NewEntryForm({people, setPeople, setMessage, setError}) {
+  const [name, setName] = useState('');
+  const [number, setNumber] = useState('');
+
   const updateName = (evt) => {
     setName(evt.target.value);
   };
@@ -44,7 +49,23 @@ function NewEntryForm({name, number, people, setName, setNumber, setPeople}) {
               .filter((val) => val.id !== person.id)
               .concat(data)
           );
-        });
+
+          setError(false);
+          setMessage(`Updated number for ${person.name}`);
+
+          setTimeout(() => {
+            setMessage('');
+          }, 5000);
+        }).catch((err) => {
+          console.log(err);
+
+          setError(true);
+          setMessage(`Entry for ${person.name} was deleted`);
+
+          setTimeout(() => {
+            setMessage('');
+          }, 5000);
+        })
 
       setName('');
       setNumber('');
@@ -58,6 +79,13 @@ function NewEntryForm({name, number, people, setName, setNumber, setPeople}) {
         setPeople(
           people.concat(data)
         );
+
+        setError(false);
+        setMessage(`Added ${name}`);
+        
+        setTimeout(() => {
+          setMessage('');
+        }, 5000);
       });
 
     setName('');
@@ -78,7 +106,7 @@ function NewEntryForm({name, number, people, setName, setNumber, setPeople}) {
   );
 }
 
-function PhonebookEntries({people, filter, setPeople}) {
+function PhonebookEntries({people, filter, setPeople, setMessage, setError}) {
   const deletePerson = (person_id) => {
     const person = people.find(({name, number, id}) => id === person_id);
     console.log(person_id, person);
@@ -90,6 +118,13 @@ function PhonebookEntries({people, filter, setPeople}) {
           setPeople(
             people.filter(({name, number, id}) => id !== person_id)
           );
+
+          setError(false);
+          setMessage(`Deleted entry ${person.name}`);
+
+          setTimeout(() => {
+            setMessage('');
+          }, 5000);
         });
     }
   };

@@ -1,13 +1,14 @@
 import { useState, useEffect } from 'react';
 
 import { Search, NewEntryForm, PhonebookEntries } from './components/Phonebook';
+import Notification from './components/Notification';
 import { getAll } from './services/phonebook.service';
 
 function App() {
   const [people, setPeople] = useState([]);
-  const [name, setName] = useState('');
-  const [number, setNumber] = useState('');
   const [filter, setFilter] = useState('');
+  const [message, setMessage] = useState('');
+  const [error, setError] = useState(false);
 
   const hook = () => {
     getAll()
@@ -22,15 +23,19 @@ function App() {
   return (
     <div>
       <h2>Phonebook</h2>
+      <Notification message={message} isError={error} />
       <Search filter={filter} setFilter={setFilter} />
       <NewEntryForm
-        name={name}
-        number={number}
         people={people}
-        setName={setName}
-        setNumber={setNumber}
-        setPeople={setPeople} />
-      <PhonebookEntries people={people} filter={filter} setPeople={setPeople} />
+        setPeople={setPeople}
+        setMessage={setMessage}
+        setError={setError} />
+      <PhonebookEntries
+        people={people}
+        filter={filter}
+        setPeople={setPeople}
+        setMessage={setMessage}
+        setError={setError} />
     </div>
   );
 }
