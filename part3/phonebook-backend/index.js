@@ -1,4 +1,5 @@
 const express = require('express');
+const morgan = require('morgan');
 
 const app = express();
 
@@ -33,7 +34,12 @@ const generateId = () => {
   return Math.max(...DATA.map(({name, number, id}) => id)) + 1;
 };
 
+morgan.token('request-body', (request) => {
+  return JSON.stringify(request.body);
+});
+
 app.use(express.json());
+app.use(morgan(':method :url :status :res[content-length] - :response-time ms :request-body'));
 
 app.get('/', (request, response) => {
   response.send('Hello, World!');
