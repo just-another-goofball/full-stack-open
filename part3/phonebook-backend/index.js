@@ -25,6 +25,16 @@ const DATA = [
   },
 ];
 
+const generateId = () => {
+  if (DATA.length === 0) {
+    return 1;
+  }
+
+  return Math.max(...DATA.map(({name, number, id}) => id)) + 1;
+};
+
+app.use(express.json());
+
 app.get('/', (request, response) => {
   response.send('Hello, World!');
 });
@@ -33,8 +43,49 @@ app.get('/api', (request, response) => {
   response.send('Welcome to the phonebook api!');
 });
 
+app.get('/info', (request, response) => {
+  response.send(`Phonebook has info on ${DATA.length} people<br />${new Date()}`);
+})
+
 app.get('/api/persons', (request, response) => {
   response.json(DATA);
+});
+
+app.post('/api/persons', (request, response) => {
+  const {name, number} = request.body;
+
+  if (name && DATA.some((person) => name === person.name)) {
+    response.status(400).json({error: 'name must be unique'});
+  } else if (name && number) {
+    DATA.push({
+      name,
+      number,
+      id: generateId(),
+    });
+    response.json(DATA[DATA.length - 1]);
+  } else {
+    response.status(400).json({error: 'name or number is missing'});
+  }
+})
+
+app.get('/api/persons/:id', (request, response) => {
+  const requestedId = +request.params.id;
+  const person = DATA.find(({name, number, id}) => id === requestedId);
+
+  if (person) {
+    response.json(person);
+  } else {
+    response.status(404).end();
+  }
+});
+
+app.delete('/api/persons/:id', (request, response) => {
+  const requestedId = +request.params.id;
+  const index = DATA.findIndex(({name, number, id}) => id === requestedId);
+
+  DATA.splice(index, 1);
+
+  response.status(204).end();
 });
 
 const PORT = 3001;
