@@ -1,4 +1,5 @@
 const express = require('express');
+const cors = require('cors');
 const morgan = require('morgan');
 
 const app = express();
@@ -38,12 +39,10 @@ morgan.token('request-body', (request) => {
   return JSON.stringify(request.body);
 });
 
+app.use(cors());
+app.use(express.static('build'));
 app.use(express.json());
 app.use(morgan(':method :url :status :res[content-length] - :response-time ms :request-body'));
-
-app.get('/', (request, response) => {
-  response.send('Hello, World!');
-});
 
 app.get('/api', (request, response) => {
   response.send('Welcome to the phonebook api!');
@@ -94,8 +93,9 @@ app.delete('/api/persons/:id', (request, response) => {
   response.status(204).end();
 });
 
-const PORT = 3001;
+const PORT = process.env.PORT || 3001;
+const HOST = process.env.HOST || '0.0.0.0';
 
-app.listen(PORT, () => {
+app.listen(PORT, HOST, () => {
   console.log(`listening at ${PORT}...`);
 });
