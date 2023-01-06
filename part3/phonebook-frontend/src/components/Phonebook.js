@@ -42,7 +42,7 @@ function NewEntryForm({people, setPeople, setMessage, setError}) {
     const prompt = `${name} already exists. Do you want to replace the number with a new one?`;
 
     if (person && window.confirm(prompt)) {
-      updatePersonById(person.id, {...person, number})
+      updatePersonById(person.id, { name: person.name, number: number })
         .then((data) => {
           setPeople(
             people

@@ -2,39 +2,13 @@ const express = require('express');
 const cors = require('cors');
 const morgan = require('morgan');
 
+const Record = require('./models/record');
+const { response } = require('express');
+
 const app = express();
 
-const DATA = [
-  { 
-    "id": 1,
-    "name": "Arto Hellas", 
-    "number": "040-123456"
-  },
-  { 
-    "id": 2,
-    "name": "Ada Lovelace", 
-    "number": "39-44-5323523"
-  },
-  { 
-    "id": 3,
-    "name": "Dan Abramov", 
-    "number": "12-43-234345"
-  },
-  { 
-    "id": 4,
-    "name": "Mary Poppendieck", 
-    "number": "39-23-6423122"
-  },
-];
 
-const generateId = () => {
-  if (DATA.length === 0) {
-    return 1;
-  }
-
-  return Math.max(...DATA.map(({name, number, id}) => id)) + 1;
-};
-
+/*** MIDDLEWARE ***/
 morgan.token('request-body', (request) => {
   return JSON.stringify(request.body);
 });
@@ -44,55 +18,90 @@ app.use(express.static('build'));
 app.use(express.json());
 app.use(morgan(':method :url :status :res[content-length] - :response-time ms :request-body'));
 
+/*** ENDPOINTS ***/
 app.get('/api', (request, response) => {
   response.send('Welcome to the phonebook api!');
 });
 
-app.get('/info', (request, response) => {
-  response.send(`Phonebook has info on ${DATA.length} people<br />${new Date()}`);
-})
-
 app.get('/api/persons', (request, response) => {
-  response.json(DATA);
+  Record.find({})
+    .then((result) => {
+      response.json(result);
+    })
 });
 
 app.post('/api/persons', (request, response) => {
   const {name, number} = request.body;
 
-  if (name && DATA.some((person) => name === person.name)) {
-    response.status(400).json({error: 'name must be unique'});
-  } else if (name && number) {
-    DATA.push({
-      name,
-      number,
-      id: generateId(),
-    });
-    response.json(DATA[DATA.length - 1]);
+  if (name && number) {
+    const newRecord = new Record({ name, number });
+
+    newRecord.save()
+      .then((result) => {
+        response.json(result);
+      })
   } else {
     response.status(400).json({error: 'name or number is missing'});
   }
-})
+});
 
-app.get('/api/persons/:id', (request, response) => {
-  const requestedId = +request.params.id;
-  const person = DATA.find(({name, number, id}) => id === requestedId);
+app.get('/api/persons/:id', (request, response, next) => {
+  Record.findById(request.params.id)
+    then((record) => {
+      if (record) {
+        response.json(record);
+      } else {
+        response.status(404).end();
+      }
+    }).catch((error) => {
+      next(error);
+    });
+});
 
-  if (person) {
-    response.json(person);
+app.put('/api/persons/:id', (request, response, next) => {
+  const updatedRecord = {
+    name: request.body.name,
+    number: request.body.number,
+  };
+
+  Record.findByIdAndUpdate(request.params.id, updatedRecord, { new: true })
+    .then((result) => {
+      response.json(result);
+    }).catch((error) => {
+      next(error);
+    });
+});
+
+app.delete('/api/persons/:id', (request, response, next) => {
+  Record.findByIdAndRemove(request.params.id)
+    .then((result) => {
+      response.status(204).end();
+    }).catch((error) => {
+      next(error);
+    });
+});
+
+/*** MORE MIDDLEWARE ***/
+const unknownEndpoint = (request, response) => {
+  response.status(404).send({ error: 'Unknown endpoint!\nMake sure the URL you entered is correct.' });
+};
+
+const errorHandler = (error, request, response, next) => {
+  console.log(error);
+
+  if (error.name === 'CastError') {
+    response.status(400).send({ error: 'malformed ID' });
   } else {
-    response.status(404).end();
+    response.status(400).send({ error: `${error.message}` });
   }
-});
 
-app.delete('/api/persons/:id', (request, response) => {
-  const requestedId = +request.params.id;
-  const index = DATA.findIndex(({name, number, id}) => id === requestedId);
+  next(error);
+};
 
-  DATA.splice(index, 1);
+app.use(unknownEndpoint);
+app.use(errorHandler);
 
-  response.status(204).end();
-});
-
+/*** SERVE ***/
 const PORT = process.env.PORT || 3001;
 const HOST = process.env.HOST || '0.0.0.0';
 
