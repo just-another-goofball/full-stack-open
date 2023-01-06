@@ -1,3 +1,4 @@
+import React from 'react';
 import { useState, useEffect } from 'react';
 
 import { Search, NewEntryForm, PhonebookEntries } from './components/Phonebook';
@@ -16,7 +17,7 @@ function App() {
         console.log(data);
         setPeople(data);
       });
-  }
+  };
 
   useEffect(hook, []);
 

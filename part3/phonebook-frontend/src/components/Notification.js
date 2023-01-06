@@ -1,3 +1,6 @@
+import React from 'react';
+import PropTypes from 'prop-types';
+
 function Notification({message, isError}) {
   if (message === null || message === undefined || message === '') {
     return;
@@ -19,7 +22,11 @@ function Notification({message, isError}) {
     <div style={style}>
       {message}
     </div>
-  )
+  );
 }
+Notification.propTypes = {
+  message: PropTypes.string.isRequired,
+  isError: PropTypes.bool.isRequired,
+};
 
 export default Notification;

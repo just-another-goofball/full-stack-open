@@ -6,7 +6,7 @@ const URL = process.env.MONGODB_URI;
   console.log(`connecting to ${URL}`);
 
   mongoose.connect(URL)
-    .then((res) => {
+    .then(() => {
       console.log('connected to mongodb');
     }).catch((err) => {
       console.log(`failed to connect to mongodb: ${err.message}`);
@@ -38,4 +38,4 @@ recordSchema.set('toJSON', {
   },
 });
 
-module.exports = mongoose.model('Record', recordSchema)
+module.exports = mongoose.model('Record', recordSchema);

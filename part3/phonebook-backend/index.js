@@ -3,7 +3,6 @@ const cors = require('cors');
 const morgan = require('morgan');
 
 const Record = require('./models/record');
-const { response } = require('express');
 
 const app = express();
 
@@ -27,7 +26,7 @@ app.get('/api/persons', (request, response) => {
   Record.find({})
     .then((result) => {
       response.json(result);
-    })
+    });
 });
 
 app.post('/api/persons', (request, response, next) => {
@@ -35,19 +34,19 @@ app.post('/api/persons', (request, response, next) => {
 
   if (name && number) {
     Record.find({ name })
-    .then((result) => {
-      if (result) {
-        next({ message: `Record for (${name}) already exists in the phonebook!` });
-      } else {
-        const newRecord = new Record({ name, number });
-        newRecord.save()
-          .then((result) => {
-            response.json(result);
-          }).catch(error => {
-            next(error);
-          });
-      }
-    });
+      .then((result) => {
+        if (result) {
+          next({ message: `Record for (${name}) already exists in the phonebook!` });
+        } else {
+          const newRecord = new Record({ name, number });
+          newRecord.save()
+            .then((result) => {
+              response.json(result);
+            }).catch(error => {
+              next(error);
+            });
+        }
+      });
   } else {
     response.status(400).json({error: 'name or number is missing'});
   }
@@ -55,7 +54,7 @@ app.post('/api/persons', (request, response, next) => {
 
 app.get('/api/persons/:id', (request, response, next) => {
   Record.findById(request.params.id)
-    then((record) => {
+    .then((record) => {
       if (record) {
         response.json(record);
       } else {
@@ -85,7 +84,7 @@ app.put('/api/persons/:id', (request, response, next) => {
 
 app.delete('/api/persons/:id', (request, response, next) => {
   Record.findByIdAndRemove(request.params.id)
-    .then((result) => {
+    .then(() => {
       response.status(204).end();
     }).catch((error) => {
       next(error);

@@ -1,4 +1,6 @@
+import React from 'react';
 import { useState } from 'react';
+import PropType from 'prop-types';
 
 import { addPerson, deleteById, updatePersonById } from '../services/phonebook.service';
 
@@ -9,6 +11,11 @@ function Input({label, value, onChangeCallback}) {
     </div>
   );
 }
+Input.propTypes = {
+  label: PropType.string.isRequired,
+  value: PropType.string.isRequired,
+  onChangeCallback: PropType.func.isRequired,
+};
 
 function Search({filter, setFilter}) {
   const updateFilter = (evt) => {
@@ -19,6 +26,10 @@ function Search({filter, setFilter}) {
     <Input label="filter names with" value={filter} onChangeCallback={updateFilter} />
   );
 }
+Search.propTypes = {
+  filter: PropType.string.isRequired,
+  setFilter: PropType.func.isRequired,
+};
 
 function NewEntryForm({people, setPeople, setMessage, setError}) {
   const [name, setName] = useState('');
@@ -114,9 +125,16 @@ function NewEntryForm({people, setPeople, setMessage, setError}) {
     </>
   );
 }
+NewEntryForm.propTypes = {
+  people: PropType.arrayOf(PropType.object).isRequired,
+  setPeople: PropType.func.isRequired,
+  setMessage: PropType.func.isRequired,
+  setError: PropType.func.isRequired,
+};
 
 function PhonebookEntries({people, filter, setPeople, setMessage, setError}) {
   const deletePerson = (person_id) => {
+    // eslint-disable-next-line no-unused-vars
     const person = people.find(({name, number, id}) => id === person_id);
     console.log(person_id, person);
 
@@ -125,6 +143,7 @@ function PhonebookEntries({people, filter, setPeople, setMessage, setError}) {
         .then((res) => {
           console.log(res);
           setPeople(
+            // eslint-disable-next-line no-unused-vars
             people.filter(({name, number, id}) => id !== person_id)
           );
 
@@ -144,6 +163,7 @@ function PhonebookEntries({people, filter, setPeople, setMessage, setError}) {
       <table>
         <tbody>
           {people
+            // eslint-disable-next-line no-unused-vars
             .filter(({name, number, id}) => name.toLowerCase().includes(filter.toLowerCase()))
             .map(({name, number, id}) => (
               <tr key={id}>
@@ -151,12 +171,19 @@ function PhonebookEntries({people, filter, setPeople, setMessage, setError}) {
                 <td><button onClick={() => deletePerson(id)}>delete</button></td>
               </tr>
             )
-          )}
+            )}
         </tbody>
       </table>
     </>
-  )
+  );
 }
+PhonebookEntries.propTypes = {
+  people: PropType.arrayOf(PropType.object).isRequired,
+  setPeople: PropType.func.isRequired,
+  filter: PropType.string.isRequired,
+  setMessage: PropType.func.isRequired,
+  setError: PropType.func.isRequired,
+};
 
 export {
   Search,
