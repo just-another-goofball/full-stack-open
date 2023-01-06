@@ -7,15 +7,27 @@ const URL = process.env.MONGODB_URI;
 
   mongoose.connect(URL)
     .then((res) => {
-      console.log('done');
+      console.log('connected to mongodb');
     }).catch((err) => {
       console.log(`failed to connect to mongodb: ${err.message}`);
     });
 })();
 
 const recordSchema = new mongoose.Schema({
-  name: String,
-  number: String,
+  name: {
+    type: String,
+    minLength: 3,
+    required: true,
+  },
+  number: {
+    type: String,
+    minLength: 8,
+    validate: {
+      validator: (val) => /^\d{0,3}-{0,1}\d+$/.test(val),
+      message: (props) => `(${props.value}) is not a valid phone number`,
+    },
+    required: true,
+  },
 });
 
 recordSchema.set('toJSON', {

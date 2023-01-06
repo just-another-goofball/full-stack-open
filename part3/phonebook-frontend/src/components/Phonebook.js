@@ -60,12 +60,12 @@ function NewEntryForm({people, setPeople, setMessage, setError}) {
           console.log(err);
 
           setError(true);
-          setMessage(`Entry for ${person.name} was deleted`);
+          setMessage(`${err.response?.data?.error ?? err}`);
 
           setTimeout(() => {
             setMessage('');
           }, 5000);
-        })
+        });
 
       setName('');
       setNumber('');
@@ -83,6 +83,15 @@ function NewEntryForm({people, setPeople, setMessage, setError}) {
         setError(false);
         setMessage(`Added ${name}`);
         
+        setTimeout(() => {
+          setMessage('');
+        }, 5000);
+      }).catch((err) => {
+        console.log(err);
+
+        setError(true);
+        setMessage(`${err.response?.data?.error ?? err}`);
+
         setTimeout(() => {
           setMessage('');
         }, 5000);

@@ -30,16 +30,24 @@ app.get('/api/persons', (request, response) => {
     })
 });
 
-app.post('/api/persons', (request, response) => {
+app.post('/api/persons', (request, response, next) => {
   const {name, number} = request.body;
 
   if (name && number) {
-    const newRecord = new Record({ name, number });
-
-    newRecord.save()
-      .then((result) => {
-        response.json(result);
-      })
+    Record.find({ name })
+    .then((result) => {
+      if (result) {
+        next({ message: `Record for (${name}) already exists in the phonebook!` });
+      } else {
+        const newRecord = new Record({ name, number });
+        newRecord.save()
+          .then((result) => {
+            response.json(result);
+          }).catch(error => {
+            next(error);
+          });
+      }
+    });
   } else {
     response.status(400).json({error: 'name or number is missing'});
   }
@@ -64,7 +72,10 @@ app.put('/api/persons/:id', (request, response, next) => {
     number: request.body.number,
   };
 
-  Record.findByIdAndUpdate(request.params.id, updatedRecord, { new: true })
+  Record.findByIdAndUpdate(
+    request.params.id, updatedRecord, 
+    { new: true, context: 'query', runValidators: true }
+  )
     .then((result) => {
       response.json(result);
     }).catch((error) => {
@@ -91,6 +102,8 @@ const errorHandler = (error, request, response, next) => {
 
   if (error.name === 'CastError') {
     response.status(400).send({ error: 'malformed ID' });
+  } else if (error.name === 'ValidationError') {
+    response.status(400).send({ error: `Invalid name or number: ${error.message}`});
   } else {
     response.status(400).send({ error: `${error.message}` });
   }
