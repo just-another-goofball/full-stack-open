@@ -10,3 +10,14 @@ content-type: application/json
   "url": "https://remy-dandanadan.in/blog/2134",
   "likes": 1233
 }
+
+###
+POST http://localhost:3003/api/blogs HTTP/1.0
+content-type: application/json
+
+{
+  "title": "Controversial title",
+  "author": "Rameshwara Nandanadan",
+  "url": "https://remy-dandanadan.in/blog/1323",
+  "likes": 502
+}
