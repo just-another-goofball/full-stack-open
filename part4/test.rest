@@ -1,0 +1,12 @@
+GET http://localhost:3003/api/blogs HTTP/1.0
+
+###
+POST http://localhost:3003/api/blogs HTTP/1.0
+content-type: application/json
+
+{
+  "title": "Catchy title",
+  "author": "Rameshwara Nandanadan",
+  "url": "https://remy-dandanadan.in/blog/2134",
+  "likes": 1233
+}
