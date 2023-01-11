@@ -6,7 +6,7 @@
   "scripts": {
     "start": "node index.js",
     "dev": "npx nodemon index.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "npx jest --verbose"
   },
   "author": "Jashandeep Singh",
   "license": "ISC",
@@ -16,6 +16,8 @@
     "mongoose": "^6.8.3"
   },
   "devDependencies": {
+    "eslint": "^8.31.0",
+    "jest": "^29.3.1",
     "nodemon": "^2.0.20"
   }
 }
